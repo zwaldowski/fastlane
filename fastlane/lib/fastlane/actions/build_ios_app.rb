@@ -68,12 +68,12 @@ module Fastlane
           return nil
         end
 
-        puts "gym_output_path: #{gym_output_path}"
+        puts("gym_output_path: #{gym_output_path}")
 
         absolute_output_path = File.expand_path(gym_output_path)
         absolute_dsym_path = absolute_output_path.gsub(".ipa", ".app.dSYM.zip")
 
-        puts "absolute_output_path: #{absolute_output_path}"
+        puts("absolute_output_path: #{absolute_output_path}")
 
         # This might be the mac app path, so we don't want to set it here
         # https://github.com/fastlane/fastlane/issues/5757
