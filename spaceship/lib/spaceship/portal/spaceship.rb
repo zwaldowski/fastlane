@@ -39,7 +39,7 @@ module Spaceship
       #
       # @return (String) The ID of the select team. You also get the value if
       #   the user is only in one team.
-      def select_team(team_id: team_id = nil, team_name: team_name = nil)
+      def select_team(team_id: nil, team_name: nil)
         @client.select_team(team_id: team_id, team_name: team_name)
       end
 
@@ -70,6 +70,11 @@ module Spaceship
         Spaceship::Portal::AppService
       end
 
+      # @return (Class) Access the iCloud Containers for the spaceship
+      def cloud_container
+        Spaceship::Portal::CloudContainer.set_client(@client)
+      end
+
       # @return (Class) Access the devices for the spaceship
       def device
         Spaceship::Portal::Device.set_client(@client)
@@ -98,7 +103,7 @@ module Spaceship
       Spaceship::Portal.login(user, password)
     end
 
-    def select_team(team_id: team_id = nil, team_name: team_name = nil)
+    def select_team(team_id: nil, team_name: nil)
       Spaceship::Portal.select_team(team_id: team_id, team_name: team_name)
     end
 
@@ -120,6 +125,10 @@ module Spaceship
 
     def app_service
       Spaceship::Portal.app_service
+    end
+
+    def cloud_container
+      Spaceship::Portal.cloud_container
     end
 
     def device

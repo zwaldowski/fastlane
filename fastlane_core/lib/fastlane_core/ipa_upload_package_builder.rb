@@ -21,7 +21,7 @@ module FastlaneCore
         apple_id: app_id,
         file_size: File.size(ipa_path),
         ipa_path: File.basename(ipa_path), # this is only the base name as the ipa is inside the package
-        md5: Digest::MD5.hexdigest(File.read(ipa_path)),
+        md5: Digest::MD5.file(ipa_path).hexdigest,
         archive_type: "bundle",
         platform: (platform || "ios") # pass "appletvos" for Apple TV's IPA
       }
@@ -36,7 +36,7 @@ module FastlaneCore
     end
 
     def unique_ipa_path(ipa_path)
-      "#{File.basename(ipa_path, '.ipa')}_#{Digest::SHA256.file(ipa_path).hexdigest}.ipa"
+      "#{Digest::SHA256.file(ipa_path).hexdigest}.ipa"
     end
 
     private

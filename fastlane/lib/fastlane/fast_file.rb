@@ -29,7 +29,7 @@ module Fastlane
       content.scan(/^\s*require (.*)/).each do |current|
         gem_name = current.last
         next if gem_name.include?(".") # these are local gems
-        UI.important("You have require'd a gem, if this is a third party gem, please use `fastlane_require #{gem_name}` to ensure the gem is installed locally.")
+        UI.important("You have required a gem, if this is a third party gem, please use `fastlane_require #{gem_name}` to ensure the gem is installed locally.")
       end
 
       parse(content, @path)
@@ -56,8 +56,14 @@ module Fastlane
           eval(data, parsing_binding, relative_path) # using eval is ok for this case
           # rubocop:enable Security/Eval
         rescue SyntaxError => ex
-          line = ex.to_s.match(/#{Regexp.escape(relative_path)}:(\d+)/)[1]
-          UI.user_error!("Syntax error in your Fastfile on line #{line}: #{ex}")
+          match = ex.to_s.match(/#{Regexp.escape(relative_path)}:(\d+)/)
+          if match
+            line = match[1]
+            UI.content_error(data, line)
+            UI.user_error!("Syntax error in your Fastfile on line #{line}: #{ex}")
+          else
+            UI.user_error!("Syntax error in your Fastfile: #{ex}")
+          end
         end
       end
 
@@ -200,9 +206,7 @@ module Fastlane
     end
 
     def generated_fastfile_id(id)
-      # This value helps us track success/failure metrics for Fastfiles we
-      # generate as part of an automated process.
-      ENV['GENERATED_FASTFILE_ID'] = id
+      UI.important("The `generated_fastfile_id` action was deprecated, you can remove the line from your `Fastfile`")
     end
 
     def import(path = nil)
@@ -306,12 +310,9 @@ module Fastlane
     def say(value)
       # Overwrite this, since there is already a 'say' method defined in the Ruby standard library
       value ||= yield
-      Actions.execute_action('say') do
-        action_launched('say')
-        return_value = Fastlane::Actions::SayAction.run([value])
-        action_completed('say', status: FastlaneCore::ActionCompletionStatus::SUCCESS)
-        return return_value
-      end
+
+      value = { text: value } if value.kind_of?(String) || value.kind_of?(Array)
+      self.runner.trigger_action_by_name(:say, nil, false, value)
     end
 
     def puts(value)
@@ -330,15 +331,17 @@ module Fastlane
     end
 
     def action_launched(action_name)
-      # https://github.com/fastlane/fastlane/issues/11913
-      # action_launch_context = FastlaneCore::ActionLaunchContext.context_for_action_name(action_name, configuration_language: "ruby", args: ARGV)
-      # FastlaneCore.session.action_launched(launch_context: action_launch_context)
+      action_launch_context = FastlaneCore::ActionLaunchContext.context_for_action_name(action_name,
+                                                                                        fastlane_client_language: :ruby,
+                                                                                        args: ARGV)
+      FastlaneCore.session.action_launched(launch_context: action_launch_context)
     end
 
     def action_completed(action_name, status: nil)
-      # https://github.com/fastlane/fastlane/issues/11913
-      # completion_context = FastlaneCore::ActionCompletionContext.context_for_action_name(action_name, args: ARGV, status: status)
-      # FastlaneCore.session.action_completed(completion_context: completion_context)
+      completion_context = FastlaneCore::ActionCompletionContext.context_for_action_name(action_name,
+                                                                                         args: ARGV,
+                                                                                         status: status)
+      FastlaneCore.session.action_completed(completion_context: completion_context)
     end
   end
 end

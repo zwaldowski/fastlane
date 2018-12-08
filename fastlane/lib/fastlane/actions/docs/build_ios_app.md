@@ -12,7 +12,7 @@
 
 -------
 
-<h5 align="center"><code>gym</code> is part of <a href="https://fastlane.tools">fastlane</a>: The easiest way to automate beta deployments and releases for your iOS and Android apps.</h5>
+<h5 align="center"><em>gym</em> is part of <a href="https://fastlane.tools">fastlane</a>: The easiest way to automate beta deployments and releases for your iOS and Android apps.</h5>
 
 # What's gym?
 
@@ -44,15 +44,15 @@ _gym_ uses the latest APIs to build and sign your application which results in m
 
 |          |  Gym Features  |
 |----------|----------------|
-🚀            | _gym_ builds 30% faster than other build tools like [shenzhen](https://github.com/nomad/shenzhen)
+🚀 | _gym_ builds 30% faster than other build tools like [shenzhen](https://github.com/nomad/shenzhen)
 🏁 | Beautiful inline build output
-📖    | Helps you resolve common build errors like code signing issues
+📖 | Helps you resolve common build errors like code signing issues
 🚠 | Sensible defaults: Automatically detect the project, its schemes and more
-🔗  | Works perfectly with [_fastlane_](https://fastlane.tools) and other tools
+🔗 | Works perfectly with [_fastlane_](https://fastlane.tools) and other tools
 📦 | Automatically generates an `ipa` and a compressed `dSYM` file
 🚅 | Don't remember any complicated build commands, just _gym_
-🔧  | Easy and dynamic configuration using parameters and environment variables
-💾   | Store common build settings in a `Gymfile`
+🔧 | Easy and dynamic configuration using parameters and environment variables
+💾 | Store common build settings in a `Gymfile`
 📤 | All archives are stored and accessible in the Xcode Organizer
 💻 | Supports both iOS and Mac applications
 
@@ -134,25 +134,28 @@ export_options("./ExportOptions.plist")
 or you can provide hash of values directly in the `Gymfile`:
 
 ```ruby-skip-tests
-export_options: {
+export_options({
   method: "ad-hoc",
   manifest: {
     appURL: "https://example.com/My App.ipa",
   },
   thinning: "<thin-for-all-variants>"
-}
+})
 ```
 
 Optional: If _gym_ can't automatically detect the provisioning profiles to use, you can pass a mapping of bundle identifiers to provisioning profiles:
 
-```ruby-skip-tests
-export_options: {
-  method: "app-store",
-  provisioningProfiles: { 
-    "com.example.bundleid" => "Provisioning Profile Name",
-    "com.example.bundleid2" => "Provisioning Profile Name 2"
+```ruby
+build_ios_app(
+  scheme: "Release",
+  export_options: {
+    method: "app-store",
+    provisioningProfiles: { 
+      "com.example.bundleid" => "Provisioning Profile Name",
+      "com.example.bundleid2" => "Provisioning Profile Name 2"
+    }
   }
-}
+)
 ```
 
 **Note**: If you use [_fastlane_](https://fastlane.tools) with [_match_](https://fastlane.tools/match) you don't need to provide those values manually.
